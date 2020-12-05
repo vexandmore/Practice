@@ -15,10 +15,11 @@ int main() {
 
 	for (int i = 0; i < numCases; i++) {
 		Point spy, camera;
-		cin >> spy >> camera;
 		int numWalls;
-		cin >> numWalls;
 		vector<Wall> walls;
+
+		cin >> spy >> camera;
+		cin >> numWalls;
 
 		for (int i = 0; i < numWalls; i++) {
 			Wall tempWall;
