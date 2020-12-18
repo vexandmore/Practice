@@ -6,14 +6,7 @@
 using std::vector;
 
 void GameOfLife::advance(int numGenerations) {
-	vector<vector<bool>> nextPosition;//contains 10 vector<bool> initialized to false
-	for (int i = 0; i < boardSize; i++) {
-		vector<bool> temp;
-		for (int j = 0; j < boardSize; j++) {
-			temp.push_back(false);
-		}
-		nextPosition.push_back(temp);
-	}
+	vector<vector<bool>> nextPosition = getEmptyVector();
 
 	for (int i = 0; i < numGenerations; i++) {
 		for (int row = 0; row < boardSize; row++) {
@@ -33,35 +26,28 @@ void GameOfLife::advance(int numGenerations) {
 			}
 		}
 		this->board = nextPosition;
-		for (int f = 0; f < boardSize; f++) {
-			for (int t = 0; t < boardSize; t++) {
-				nextPosition[f][t] = false;
-			}
-		}
+		resetVector(nextPosition);
 	}
 }
 
 GameOfLife::GameOfLife() {
-	for (int i = 0; i < boardSize; i++) {
-		vector<bool> temp;
-		board.push_back(temp);
-	}
+	board = getEmptyVector();
 }
 
 std::istream& operator>> (std::istream& is, GameOfLife& gol) {
-	for (int i = 0; i < GameOfLife::boardSize; i++) {
-		gol.board[i].clear();
+	//read the 10 lines and set the board to its state
+	for (int row = 0; row < GameOfLife::boardSize; row++) {
 		std::string line;
 		is >> line;
-		for (std::string::const_iterator it = line.begin(); it < line.end(); it++) {
-			gol.board[i].push_back(*it == '1');
+		for (int col = 0; col < line.size() && col < GameOfLife::boardSize; col++) {
+			gol.board[row][col] = line[col] == '1';
 		}
 	}
 	return is;
 }
 
 std::ostream& operator<< (std::ostream& os, const GameOfLife& gol) {
-	for (auto line : gol.board) {
+	for (const vector<bool>& line : gol.board) {
 		for (auto character : line) {
 			os << character;
 		}
@@ -74,21 +60,15 @@ std::ostream& operator<< (std::ostream& os, const GameOfLife& gol) {
 int GameOfLife::numNeighbours(int row, int col) {
 	int numNeighbours = 0;
 	//add top row
-	if (row == 0) {
-	}
-	else {
-		numNeighbours += board[row-1][col];//add top center
+	if (row != 0) {
+		numNeighbours += board[row - 1][col];//add top center
 		//cond add top left
-		if (col == 0) {
-		}
-		else {
-			numNeighbours += board[row-1][col-1];
+		if (col != 0) {
+			numNeighbours += board[row - 1][col - 1];
 		}
 		//cond add top right
-		if (col == boardSize - 1) {
-		}
-		else {
-			numNeighbours += board[row-1][col+1];
+		if (col != boardSize - 1) {
+			numNeighbours += board[row - 1][col + 1];
 		}
 	}
 	//add center left and right
@@ -109,4 +89,22 @@ int GameOfLife::numNeighbours(int row, int col) {
 		}
 	}
 	return numNeighbours;
+}
+vector<vector<bool>> GameOfLife::getEmptyVector() {
+	vector<vector<bool>> board;
+	for (int i = 0; i < boardSize; i++) {
+		vector<bool> temp;
+		for (int j = 0; j < boardSize; j++) {
+			temp.push_back(false);
+		}
+		board.push_back(temp);
+	}
+	return board;
+}
+void GameOfLife::resetVector(vector<vector<bool>>& vec) {
+	for (int i = 0; i < vec.size(); i++) {
+		for (int j = 0; j < vec.size(); j++) {
+			vec[i][j] = false;
+		}
+	}
 }

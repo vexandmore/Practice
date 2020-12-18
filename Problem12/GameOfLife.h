@@ -12,4 +12,6 @@ public:
 private:
 	std::vector<std::vector<bool>> board;
 	int numNeighbours(int x, int y);
+	static std::vector<std::vector<bool>> getEmptyVector();
+	static void resetVector(std::vector<std::vector<bool>>& vec);
 };
