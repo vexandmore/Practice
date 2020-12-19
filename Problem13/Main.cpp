@@ -6,24 +6,24 @@ using std::cin;
 using std::cout;
 using std::vector;
 
-std::string color(const Complex& num);
+std::string mandelbrotColor(const Complex& num);
 
 int main() {
 	int numCases;
 	cin >> numCases;
-	vector<Complex> complex;
+	vector<Complex> complexNumbers;
 
 	for (int i = 0; i < numCases; i++) {
 		Complex temp;
 		cin >> temp;
-		complex.push_back(temp);
+		complexNumbers.push_back(temp);
 	}
-	for (const Complex& value : complex) {
-		cout << value << " " << color(value) << "\n";
+	for (const Complex& value : complexNumbers) {
+		cout << value << " " << mandelbrotColor(value) << "\n";
 	}
 }
 
-std::string color(const Complex& num) {
+std::string mandelbrotColor(const Complex& num) {
 	double divergeValue = 100;
 
 	Complex current(0, 0);
