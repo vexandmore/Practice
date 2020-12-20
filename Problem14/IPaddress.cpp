@@ -49,7 +49,7 @@ std::string IPaddress::CIDRrange(const std::vector<IPaddress>& addresses) {
 	return IPaddress(address).toString() + "/" + std::to_string((numBitsMatching));
 }
 
-unsigned long long IPaddress::getAddress() const {
+unsigned long IPaddress::getAddress() const {
 	return address;
 }
 string IPaddress::toString() const {
@@ -63,5 +63,5 @@ string IPaddress::toString() const {
 	return out.str();
 }
 
-IPaddress::IPaddress(unsigned long long address): address(address) {
+IPaddress::IPaddress(unsigned long address): address(address) {
 }

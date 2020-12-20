@@ -5,11 +5,11 @@
 
 class IPaddress {
 private:
-	unsigned long long address;
+	unsigned long address;
 public:
-	unsigned long long getAddress() const;
+	unsigned long getAddress() const;
 	IPaddress();
-	IPaddress(unsigned long long address);
+	IPaddress(unsigned long address);
 	std::string toString() const;
 	friend std::istream& operator>> (std::istream& is, IPaddress& ip);
 	static std::string CIDRrange(const std::vector<IPaddress>& addresses);
