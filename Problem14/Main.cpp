@@ -6,7 +6,7 @@ using std::string;
 using std::cin;
 using std::cout;
 using std::vector;
-
+//test
 int main() {
 	vector<vector<IPaddress>> testCases;
 	int numCases;
