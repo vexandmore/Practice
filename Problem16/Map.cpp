@@ -29,7 +29,8 @@ std::istream& operator>> (std::istream& is, Map& map) {
 }
 
 void Map::printShortestPath() {
-	//
+	PointDetails points = findNodes(findStart('o'));
+
 }
 
 Map::Point Map::findStart(char matchingChar) {
@@ -135,78 +136,4 @@ vector<Map::Point> Map::findConnectedNodes(Map::Point start) {
 		}
 		return nodes;
 	}
-
-	/*
-
-	//add top node
-	int candidateRow = -1;
-	long int searchRow;
-	for (searchRow = (start.row - 1); searchRow >= 0; searchRow--) {
-		char currentChar = map[searchRow][start.col];
-		if (currentChar == '#')
-			break;
-		else if (currentChar == 'X' || currentChar == 'o') {
-			candidateRow = searchRow;
-			break;
-		}
-		else
-			candidateRow = searchRow;
-	}
-	if (candidateRow != -1) {
-		nodes.push_back(Map::Node(candidateRow, start.col, map[candidateRow][start.col]));
-	}
-
-	//add bottom node
-	candidateRow = -1;
-	for (searchRow = start.row + 1; searchRow < map.size(); searchRow++) {
-		char currentChar = map[searchRow][start.col];
-		if (currentChar == '#')
-			break;
-		else if (currentChar == 'X' || currentChar == 'o') {
-			candidateRow = searchRow;
-			break;
-		}
-		else
-			candidateRow = searchRow;
-	}
-	if (candidateRow != -1) {
-		nodes.push_back(Map::Node(candidateRow, start.col, map[candidateRow][start.col]));
-	}
-
-	//add right node
-	long searchCol;
-	int candidateCol = -1;
-	for (searchCol = start.col + 1; searchCol < map[start.row].size(); searchCol++) {
-		char currentChar = map[start.row][searchCol];
-		if (currentChar == '#')
-			break;
-		else if (currentChar == 'o' || currentChar == 'X') {
-			candidateCol = searchCol;
-			break;
-		}
-		else
-			candidateCol = searchCol;
-	}
-	if (candidateCol != -1) {
-		nodes.push_back(Map::Node(start.row, candidateCol, map[start.row][candidateCol]));
-	}
-
-	//add left node
-	candidateCol = -1;
-	for (searchCol = start.col - 1; searchCol >= 0; searchCol--) {
-		char currentChar = map[start.row][searchCol];
-		if (currentChar == '#')
-			break;
-		else if (currentChar == 'o' || currentChar == 'X') {
-			candidateCol = searchCol;
-			break;
-		}
-		else
-			candidateCol = searchCol;
-	}
-	if (candidateCol != -1) {
-		nodes.push_back(Map::Node(start.row, candidateCol, map[start.row][candidateCol]));
-	}
-	return nodes;
-	*/
 }

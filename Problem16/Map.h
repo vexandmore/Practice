@@ -5,17 +5,22 @@
 #include <limits>
 #include <set>
 #include <ostream>
-#include <memory>
 #include <map>
 
 class PointDetails;
 
+/*
+* Represents a map, from which a shortest path will be found
+*/
 class Map {
 public:
 	Map();
 	friend std::istream& operator>>(std::istream& is, Map& map);
 	void printShortestPath();
 
+	/*
+	* Represents a point on the map
+	*/
 	class Point {
 	public:
 		std::size_t row, col;
@@ -36,6 +41,9 @@ public:
 	void findNodesR(PointDetails& points, Map::Point start);
 };
 
+/*
+* Represents all the traversable points on the map and the connections between them
+*/
 class PointDetails {
 public:
 	std::set<Map::Point> points;
