@@ -38,9 +38,9 @@ public:
 
 public:
 	std::vector<std::string> map;
+
 	std::vector<Node> findConnectedNodes(Node start);
 	std::vector<Map::Node> findStart(char matchingChar);
-
 	std::set<Map::Node> findNodes(Map::Node start);
 	void findNodesR(std::set<Map::Node>& knownNodes, Map::Node start);
 };
