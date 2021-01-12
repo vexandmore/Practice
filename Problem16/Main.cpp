@@ -12,9 +12,14 @@ int main() {
 	Map map;
 	cin >> map;
 
-	set<Map::Node> nodes;
-	nodes = map.findNodes(map.findStart('o')[0]);
-	for (const Map::Node& node : nodes) {
-		cout << node;
+	PointDetails nodes;
+	nodes = map.findNodes(map.findStart('o'));
+	for (const Map::Point& node : nodes.points) {
+		cout << node << "\n";
+		cout << "connected to: ";
+		for (const Map::Point& connectedPoint : nodes.connections[node]) {
+			cout << connectedPoint << " ";
+		}
+		cout << "\n";
 	}
 }

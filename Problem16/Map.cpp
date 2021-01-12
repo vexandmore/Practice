@@ -4,10 +4,13 @@
 #include <istream>
 #include<iostream>
 #include <set>
+#include <map>
+#include <utility>
 using std::string;
 using std::vector;
 using std::size_t;
 using std::set;
+using std::map;
 
 Map::Map() {
 }
@@ -29,9 +32,7 @@ void Map::printShortestPath() {
 	//
 }
 
-vector<Map::Node> Map::findStart(char matchingChar) {
-	vector<Map::Node> nodes;
-
+Map::Point Map::findStart(char matchingChar) {
 	size_t row, searchCol, col;
 	for (row = 0; row < map.size(); row++) {
 		for (searchCol = 0; searchCol < map[row].size(); ) {
@@ -41,35 +42,47 @@ vector<Map::Node> Map::findStart(char matchingChar) {
 			}
 			else {
 				searchCol = col + 1;
-				nodes.push_back(Map::Node(row, col, Map::Node::Type::start));
+				return Map::Point(row, col);
 			}
 		}
 	}
-	return nodes;
+	return Map::Point(1000, 1000);
 }
 
-set<Map::Node> Map::findNodes(Map::Node start) {
-	set<Map::Node> nodes;
-	nodes.insert(start);
-	findNodesR(nodes, start);
-	return nodes;
+PointDetails Map::findNodes(Map::Point start) {
+	PointDetails points;
+	points.points.insert(start);
+	findNodesR(points, start);
+	return points;
 }
 
-void Map::findNodesR(std::set<Map::Node>& knownNodes, Map::Node start) {
-	vector<Map::Node> newNodes = findConnectedNodes(start);
+void Map::findNodesR(PointDetails& points, Map::Point start) {
+	//add start to connections if not already there
+	if (points.connections.count(start) == 0) {
+		points.connections.insert(std::make_pair(start, vector<Map::Point>{}));
+	}
 
+	vector<Map::Point> newNodes = findConnectedNodes(start);
 	for (const auto& node : newNodes) {
-		if (knownNodes.count(node) == 0) {
-			//only add and recurse if node is new
-			knownNodes.insert(node);
-			findNodesR(knownNodes, node);
+		if (points.points.count(node) == 0) {
+			//if point is new,
+			//add to points and have start connect to it
+			points.points.insert(node);
+			points.connections[start].push_back(node);//add new node to connections. We know that start is in the map
+			//connect this point to start
+			if (points.connections.count(node) == 0) {
+				points.connections.insert(std::make_pair(node, vector<Map::Point>{}));
+			}
+			points.connections[node].push_back(start);
+			//recurse
+			findNodesR(points, node);
 		}
 	}
 
 }
 
-vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
-	vector<Map::Node> nodes;
+vector<Map::Point> Map::findConnectedNodes(Map::Point start) {
+	vector<Map::Point> nodes;
 
 	if (map[start.row][start.col] == 'X' || map[start.row][start.col] == '#') {
 		//exits and walls could lead off the array or off the map by accident
@@ -84,7 +97,7 @@ vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 			case 'X':
 			case 'o':
 			case ' ':
-				nodes.push_back(Map::Node(candidateRow, start.col, currentChar));
+				nodes.push_back(Map::Point(candidateRow, start.col));
 			}
 		}
 		//add bottom if exists
@@ -95,7 +108,7 @@ vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 			case 'X':
 			case 'o':
 			case ' ':
-				nodes.push_back(Map::Node(candidateRow, start.col, currentChar));
+				nodes.push_back(Map::Point(candidateRow, start.col));
 			}
 		}
 		//add right if exists
@@ -106,7 +119,7 @@ vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 			case 'X':
 			case 'o':
 			case ' ':
-				nodes.push_back(Map::Node(start.row, candidateCol, currentChar));
+				nodes.push_back(Map::Point(start.row, candidateCol));
 			}
 		}
 		//add left if it exists
@@ -117,7 +130,7 @@ vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 			case 'X':
 			case 'o':
 			case ' ':
-				nodes.push_back(Map::Node(start.row, candidateCol, currentChar));
+				nodes.push_back(Map::Point(start.row, candidateCol));
 			}
 		}
 		return nodes;

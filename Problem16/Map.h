@@ -5,6 +5,10 @@
 #include <limits>
 #include <set>
 #include <ostream>
+#include <memory>
+#include <map>
+
+class PointDetails;
 
 class Map {
 public:
@@ -12,35 +16,30 @@ public:
 	friend std::istream& operator>>(std::istream& is, Map& map);
 	void printShortestPath();
 
-	class Node {
+	class Point {
 	public:
-		enum class Type {
-			start,
-			intermediate,
-			exit
-		};
-
 		std::size_t row, col;
-		Node* previous = nullptr;
-		Node* next = nullptr;
-		std::vector<Node*> connectedNodes{};
-		int distanceFromStart = std::numeric_limits<int>::max();
-		Node::Type type;
-		std::size_t distance(Node other);
-
+		std::size_t distance(Point other);
 	public:
-		Node(std::size_t row, std::size_t col, Type type);
-		Node(std::size_t row, std::size_t col, char character);
+		Point(std::size_t row, std::size_t col);
 
-		bool operator< (const Node& other) const;
-		friend std::ostream& operator<< (std::ostream& os, const Node& node);
+		bool operator< (const Point& other) const;
+		friend std::ostream& operator<< (std::ostream& os, const Point& node);
 	};
 
 public:
 	std::vector<std::string> map;
 
-	std::vector<Node> findConnectedNodes(Node start);
-	std::vector<Map::Node> findStart(char matchingChar);
-	std::set<Map::Node> findNodes(Map::Node start);
-	void findNodesR(std::set<Map::Node>& knownNodes, Map::Node start);
+	std::vector<Point> findConnectedNodes(Point start);
+	Map::Point findStart(char matchingChar);
+	PointDetails findNodes(Map::Point start);
+	void findNodesR(PointDetails& points, Map::Point start);
+};
+
+class PointDetails {
+public:
+	std::set<Map::Point> points;
+	std::map<Map::Point, std::vector<Map::Point>> connections;
+	PointDetails() {
+	}
 };
