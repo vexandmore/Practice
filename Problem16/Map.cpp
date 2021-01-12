@@ -74,6 +74,60 @@ void Map::findNodesR(std::set<Map::Node>& knownNodes, Map::Node start) {
 vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 	vector<Map::Node> nodes;
 
+	if (map[start.row][start.col] == 'X' || map[start.row][start.col] == '#') {
+		//exits and walls could lead off the array or off the map by accident
+		return nodes;
+	}
+	else {
+		//add top if exists
+		int candidateRow = start.row - 1;
+		if (candidateRow >= 0) {
+			char currentChar = map[candidateRow][start.col];
+			switch (currentChar) {
+			case 'X':
+			case 'o':
+			case ' ':
+				nodes.push_back(Map::Node(candidateRow, start.col, currentChar));
+			}
+		}
+		//add bottom if exists
+		candidateRow = start.row + 1;
+		if (candidateRow < map.size()) {
+			char currentChar = map[candidateRow][start.col];
+			switch (currentChar) {
+			case 'X':
+			case 'o':
+			case ' ':
+				nodes.push_back(Map::Node(candidateRow, start.col, currentChar));
+			}
+		}
+		//add right if exists
+		int candidateCol = start.col + 1;
+		if (candidateCol < map[start.row].size()) {
+			char currentChar = map[start.row][candidateCol];
+			switch (currentChar) {
+			case 'X':
+			case 'o':
+			case ' ':
+				nodes.push_back(Map::Node(start.row, candidateCol, currentChar));
+			}
+		}
+		//add left if it exists
+		candidateCol = start.col - 1;
+		if (candidateCol >= 0) {
+			char currentChar = map[start.row][candidateCol];
+			switch (currentChar) {
+			case 'X':
+			case 'o':
+			case ' ':
+				nodes.push_back(Map::Node(start.row, candidateCol, currentChar));
+			}
+		}
+		return nodes;
+	}
+
+	/*
+
 	//add top node
 	int candidateRow = -1;
 	long int searchRow;
@@ -144,4 +198,5 @@ vector<Map::Node> Map::findConnectedNodes(Map::Node start) {
 		nodes.push_back(Map::Node(start.row, candidateCol, map[start.row][candidateCol]));
 	}
 	return nodes;
+	*/
 }
