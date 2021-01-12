@@ -10,7 +10,7 @@ class Map {
 public:
 	Map();
 	friend std::istream& operator>>(std::istream& is, Map& map);
-	//void printShortestPath();
+	void printShortestPath();
 
 	class Node {
 	public:

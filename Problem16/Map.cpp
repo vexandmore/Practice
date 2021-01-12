@@ -25,12 +25,9 @@ std::istream& operator>> (std::istream& is, Map& map) {
 	return is;
 }
 
-/*void Map::printShortestPath() {
-	Map::Node start = findNodesOfChar('o')[0];
-	//find the next 'nodes'
-	Map::Node u = findCorner(Map::up, start), r = findCorner(Map::right, start), d = findCorner(Map::down, start), l = findCorner(Map::left, start);
-
-}*/
+void Map::printShortestPath() {
+	//
+}
 
 vector<Map::Node> Map::findStart(char matchingChar) {
 	vector<Map::Node> nodes;
