@@ -1,10 +1,13 @@
 #include "Map.h"
-#include<vector>
+#include "Point.h"
+#include <vector>
 #include <string>
 #include <istream>
-#include<iostream>
+#include <iostream>
 #include <set>
 #include <map>
+#include <utility>
+#include <algorithm>
 #include <utility>
 using std::string;
 using std::vector;
@@ -28,27 +31,126 @@ std::istream& operator>> (std::istream& is, Map& map) {
 	return is;
 }
 
-void Map::printShortestPath() {
-	PointDetails points = findNodes(findStart('o'));
-
+Point* Map::getPoint(int row, int col, char c) const {
+	Map::Spoint sp = Spoint(row, col);
+	if (internedPoints.count(sp) != 0) {
+		return internedPoints[sp];
+	}
+	else {
+		Point* newPoint = new Point(row, col, c);
+		internedPoints.insert(std::make_pair(sp, newPoint));
+		return newPoint;
+	}
 }
 
-Map::Point Map::findStart(char matchingChar) {
-	size_t row, searchCol, col;
-	for (row = 0; row < map.size(); row++) {
-		for (searchCol = 0; searchCol < map[row].size(); ) {
-			col = map[row].find(matchingChar, searchCol);
-			if (col == string::npos) {
-				break;
-			}
-			else {
-				searchCol = col + 1;
-				return Map::Point(row, col);
-			}
+set<Point*, Point::LessThan> Map::getPoints() const {
+	Point* start = getStart();
+	set<Point*, Point::LessThan> points;
+	points.insert(start);
+	getPointsR(points, start);
+	return points;
+}
+
+void Map::getPointsR(set<Point*, Point::LessThan>& points, Point* start) const {
+	vector<Point*> newPoints = getAdjacentPoints(start);
+	start->connectTo(newPoints);
+	for (Point* newPoint : newPoints) {
+		if (points.count(newPoint) == 0) {
+			//newPoint->connectTo(start);
+			points.insert(newPoint);
+			getPointsR(points, newPoint);
 		}
 	}
-	return Map::Point(1000, 1000);
 }
+
+vector<Point*> Map::getAdjacentPoints(Point* start) const {
+	vector<Point*> adjacentPoints;
+	//if at an exit, don't check (since we could go off the map)
+	if (start->type == 'X')
+		return adjacentPoints;
+	//add point above
+	int candidateRow = start->row - 1;
+	if (candidateRow >= 0) {
+		char candidateChar = map[candidateRow][start->col];
+		if (candidateChar != '#') {
+			adjacentPoints.push_back(getPoint(candidateRow, start->col, candidateChar));
+		}
+	}
+	//add point below
+	candidateRow = start->row + 1;
+	if (candidateRow < map.size()) {
+		char candidateChar = map[candidateRow][start->col];
+		if (candidateChar != '#') {
+			adjacentPoints.push_back(getPoint(candidateRow, start->col, candidateChar));
+		}
+	}
+	//add point at right
+	int candidateCol = start->col + 1;
+	if (candidateCol < map[start->row].length()) {
+		char candidateChar = map[start->row][candidateCol];
+		if (candidateChar != '#') {
+			adjacentPoints.push_back(getPoint(start->row, candidateCol, candidateChar));
+		}
+	}
+	//add point at left
+	candidateCol = start->col - 1;
+	if (candidateCol >= 0) {
+		char candidateChar = map[start->row][candidateCol];
+		if (candidateChar != '#') {
+			adjacentPoints.push_back(getPoint(start->row, candidateCol, candidateChar));
+		}
+	}
+	return adjacentPoints;
+}
+
+Point* Map::getStart() const {
+	for (int i = 0; i < map.size(); i++) {
+		std::size_t position = map[i].find('o');
+		if (position != string::npos) {
+			return getPoint(i, position, 'o');
+		}
+	}
+	throw "cannot find start";
+}
+/*
+void Map::printShortestPath() {
+	Point start = findStart('o');
+	PointDetails points = findNodes(start);
+	set<DPoint> unvisitedPoints;//these sets are ordered by distance from center, then row, then col
+	set<Dpoint> visitedPoints;
+	for (const Point& point : points.points) {
+		if (point == start) {
+			unvisitedPoints.insert(DPoint(point, 0));
+		}
+		else {
+			unvisitedPoints.insert(DPoint(point));
+		}
+	}
+	//main loop
+	while (unvisitedPoints.size() != 0) {
+		//get lowest distance point
+		DPoint currentPoint = *unvisitedPoints.begin();
+		unvisitedPoints.erase(currentPoint);
+		//get points it's connected to and update their distanceFromCenter
+		vector<Point> connectedPoints = points.connections[currentPoint.point];
+		for (const Point& point : connectedPoints) {
+			DPoint connectedDPoint = std::find_if(unvisitedPoints.begin(), unvisitedPoints.end(), [point](DPoint dp) {
+				return point == dp.point;
+				});
+			unvisitedPoints.erase(connectedDPoint);
+			if (currentPoint.distanceFromStart + currentPoint.point.distance(connectedDPoint.point) < connectedDPoint.distanceFromStart) {
+				connectedDPoint.distanceFromStart = currentPoint.distanceFromStart + currentPoint.point.distance(connectedDPoint.point);
+				connectedDPoint.previous = currentPoint.point;
+				currentPoint.next = connectedDPoint.point;
+				unvisitedPoints.insert(connectedDPoint);
+			}
+		}
+		visitedPoints.
+		visitedPoints.insert(currentPoint);
+	}
+
+}
+
 
 PointDetails Map::findNodes(Map::Point start) {
 	PointDetails points;
@@ -136,4 +238,4 @@ vector<Map::Point> Map::findConnectedNodes(Map::Point start) {
 		}
 		return nodes;
 	}
-}
+}*/

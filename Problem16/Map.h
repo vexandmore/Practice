@@ -1,4 +1,5 @@
 #pragma once
+#include "Point.h"
 #include<vector>
 #include <string>
 #include <istream>
@@ -6,8 +7,10 @@
 #include <set>
 #include <ostream>
 #include <map>
+#include <tuple>
 
 class PointDetails;
+class Dpoint;
 
 /*
 * Represents a map, from which a shortest path will be found
@@ -18,36 +21,24 @@ public:
 	friend std::istream& operator>>(std::istream& is, Map& map);
 	void printShortestPath();
 
-	/*
-	* Represents a point on the map
-	*/
-	class Point {
+public:
+	class Spoint {
 	public:
-		std::size_t row, col;
-		std::size_t distance(Point other);
-	public:
-		Point(std::size_t row, std::size_t col);
-
-		bool operator< (const Point& other) const;
-		friend std::ostream& operator<< (std::ostream& os, const Point& node);
+		int row, col;
+		Spoint(int row, int col) : row(row), col(col) {
+		}
+		bool operator< (const Spoint& rh) const {
+			return std::tie(row, col) < std::tie(rh.row, rh.col);
+		}
 	};
-
-public:
+	
 	std::vector<std::string> map;
+	mutable std::map<Spoint, Point*> internedPoints{};
 
-	std::vector<Point> findConnectedNodes(Point start);
-	Map::Point findStart(char matchingChar);
-	PointDetails findNodes(Map::Point start);
-	void findNodesR(PointDetails& points, Map::Point start);
-};
+	Point* getStart() const;
+	std::set<Point*, Point::LessThan> getPoints() const;
+	void getPointsR(std::set<Point*, Point::LessThan>& points, Point* start) const;
+	std::vector<Point*> getAdjacentPoints(Point* start) const;
 
-/*
-* Represents all the traversable points on the map and the connections between them
-*/
-class PointDetails {
-public:
-	std::set<Map::Point> points;
-	std::map<Map::Point, std::vector<Map::Point>> connections;
-	PointDetails() {
-	}
+	Point* getPoint(int row, int col, char c) const;
 };
