@@ -20,6 +20,38 @@ using std::make_shared;
 Map::Map() {
 }
 
+void Map::printShortestPath(std::ostream& os) {
+	auto unvisited = getPoints();
+	set<shared_ptr<Point>, Point::LessTLDistance> endPoints;
+	while (unvisited.size() > 0) {
+		auto currentPoint = *unvisited.begin();
+		unvisited.erase(currentPoint);
+		for (auto point : currentPoint->connectedPoints) {
+			if (unvisited.count(point) != 0 &&
+				currentPoint->distanceFromStart + currentPoint->straightDistance(point) < point->distanceFromStart) {
+				unvisited.erase(point);
+				point->distanceFromStart = currentPoint->distanceFromStart + currentPoint->straightDistance(point);
+				point->previous = currentPoint;
+				unvisited.insert(point);
+			}
+			if (currentPoint->type == 'X') {
+				endPoints.insert(currentPoint);
+			}
+		}
+	}
+	os << "Shortest path:\n";
+	auto exit = *endPoints.begin();
+	vector<string> annotatedMap = map;
+	auto previous = exit->previous;
+	while (previous->type == ' ') {
+		annotatedMap[previous->row][previous->col] = '.';
+		previous = previous->previous;
+	}
+	for (const string& line : annotatedMap) {
+		os << line << '\n';
+	}
+}
+
 std::istream& operator>> (std::istream& is, Map& map) {
 	map.map.clear();
 	int width, height;
@@ -114,130 +146,3 @@ shared_ptr<Point> Map::getStart() const {
 	}
 	throw "cannot find start";
 }
-/*
-void Map::printShortestPath() {
-	Point start = findStart('o');
-	PointDetails points = findNodes(start);
-	set<DPoint> unvisitedPoints;//these sets are ordered by distance from center, then row, then col
-	set<Dpoint> visitedPoints;
-	for (const Point& point : points.points) {
-		if (point == start) {
-			unvisitedPoints.insert(DPoint(point, 0));
-		}
-		else {
-			unvisitedPoints.insert(DPoint(point));
-		}
-	}
-	//main loop
-	while (unvisitedPoints.size() != 0) {
-		//get lowest distance point
-		DPoint currentPoint = *unvisitedPoints.begin();
-		unvisitedPoints.erase(currentPoint);
-		//get points it's connected to and update their distanceFromCenter
-		vector<Point> connectedPoints = points.connections[currentPoint.point];
-		for (const Point& point : connectedPoints) {
-			DPoint connectedDPoint = std::find_if(unvisitedPoints.begin(), unvisitedPoints.end(), [point](DPoint dp) {
-				return point == dp.point;
-				});
-			unvisitedPoints.erase(connectedDPoint);
-			if (currentPoint.distanceFromStart + currentPoint.point.distance(connectedDPoint.point) < connectedDPoint.distanceFromStart) {
-				connectedDPoint.distanceFromStart = currentPoint.distanceFromStart + currentPoint.point.distance(connectedDPoint.point);
-				connectedDPoint.previous = currentPoint.point;
-				currentPoint.next = connectedDPoint.point;
-				unvisitedPoints.insert(connectedDPoint);
-			}
-		}
-		visitedPoints.
-		visitedPoints.insert(currentPoint);
-	}
-
-}
-
-
-PointDetails Map::findNodes(Map::Point start) {
-	PointDetails points;
-	points.points.insert(start);
-	findNodesR(points, start);
-	return points;
-}
-
-void Map::findNodesR(PointDetails& points, Map::Point start) {
-	//add start to connections if not already there
-	if (points.connections.count(start) == 0) {
-		points.connections.insert(std::make_pair(start, vector<Map::Point>{}));
-	}
-
-	vector<Map::Point> newNodes = findConnectedNodes(start);
-	for (const auto& node : newNodes) {
-		if (points.points.count(node) == 0) {
-			//if point is new,
-			//add to points and have start connect to it
-			points.points.insert(node);
-			points.connections[start].push_back(node);//add new node to connections. We know that start is in the map
-			//connect this point to start
-			if (points.connections.count(node) == 0) {
-				points.connections.insert(std::make_pair(node, vector<Map::Point>{}));
-			}
-			points.connections[node].push_back(start);
-			//recurse
-			findNodesR(points, node);
-		}
-	}
-
-}
-
-vector<Map::Point> Map::findConnectedNodes(Map::Point start) {
-	vector<Map::Point> nodes;
-
-	if (map[start.row][start.col] == 'X' || map[start.row][start.col] == '#') {
-		//exits and walls could lead off the array or off the map by accident
-		return nodes;
-	}
-	else {
-		//add top if exists
-		int candidateRow = start.row - 1;
-		if (candidateRow >= 0) {
-			char currentChar = map[candidateRow][start.col];
-			switch (currentChar) {
-			case 'X':
-			case 'o':
-			case ' ':
-				nodes.push_back(Map::Point(candidateRow, start.col));
-			}
-		}
-		//add bottom if exists
-		candidateRow = start.row + 1;
-		if (candidateRow < map.size()) {
-			char currentChar = map[candidateRow][start.col];
-			switch (currentChar) {
-			case 'X':
-			case 'o':
-			case ' ':
-				nodes.push_back(Map::Point(candidateRow, start.col));
-			}
-		}
-		//add right if exists
-		int candidateCol = start.col + 1;
-		if (candidateCol < map[start.row].size()) {
-			char currentChar = map[start.row][candidateCol];
-			switch (currentChar) {
-			case 'X':
-			case 'o':
-			case ' ':
-				nodes.push_back(Map::Point(start.row, candidateCol));
-			}
-		}
-		//add left if it exists
-		candidateCol = start.col - 1;
-		if (candidateCol >= 0) {
-			char currentChar = map[start.row][candidateCol];
-			switch (currentChar) {
-			case 'X':
-			case 'o':
-			case ' ':
-				nodes.push_back(Map::Point(start.row, candidateCol));
-			}
-		}
-		return nodes;
-	}
-}*/

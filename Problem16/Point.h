@@ -18,14 +18,18 @@ public:
 	Point(int row, int col, char type);
 
 	void connectTo(std::vector<std::shared_ptr<Point>> otherPoints);
-	int distance(Point* other);
+	int straightDistance(std::shared_ptr<Point> other);
 	bool operator< (const Point& other) const;
 	bool operator== (const Point& other) const;
 	bool operator!= (const Point& other) const;
 	friend std::ostream& operator<< (std::ostream& os, const Point& node);
 	class LessThan {
 	public:
-		bool operator() (std::shared_ptr<Point> const lh, std::shared_ptr<Point> const rh) const;
+		bool operator() (const std::shared_ptr<Point>& const lh, const std::shared_ptr<Point>& const rh) const;
+	};
+	class LessTLDistance {
+	public:
+		bool operator() (const std::shared_ptr<Point>& const lh, const std::shared_ptr<Point>& const rh) const;
 	};
 };
 

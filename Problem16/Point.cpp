@@ -24,12 +24,12 @@ void Point::connectTo(vector<shared_ptr<Point>> otherPoints) {
 	}
 }
 
-int Point::distance(Point* otherPoint) {
-	if (row == otherPoint->row) {
-		return std::abs(col - otherPoint->col);
+int Point::straightDistance(shared_ptr<Point> other) {
+	if (row == other->row) {
+		return std::abs(col - other->col);
 	}
-	else if (col == otherPoint->col) {
-		return std::abs(row - otherPoint->row);
+	else if (col == other->col) {
+		return std::abs(row - other->row);
 	}
 	else {
 		throw new std::exception("points must be in line");
@@ -62,9 +62,20 @@ std::ostream& operator<< (std::ostream& os, const Point& node) {
 	return os;
 }
 
-bool Point::LessThan::operator() (shared_ptr<Point> const lh, shared_ptr<Point> const rh) const {
+bool Point::LessThan::operator() (const shared_ptr<Point>& const lh, const shared_ptr<Point>& const rh) const {
 	return lh->operator<(*rh);
 }
+bool Point::LessTLDistance::operator() (const shared_ptr<Point>& const lh, const shared_ptr<Point>& const rh) const {
+	if (lh->distanceFromStart != rh->distanceFromStart) {
+		return lh->distanceFromStart < rh->distanceFromStart;
+	}
+	else {
+		double distanceFromTLlh = std::sqrt(lh->col * lh->col + lh->row * lh->row);
+		double distanceFromTLrh = std::sqrt(rh->col * rh->col + rh->row * rh->row);
+		return distanceFromTLlh < distanceFromTLrh;
+	}
+}
+
 
 /*bool operator== (const std::shared_ptr<Point>& lhs, const std::shared_ptr<Point>& rhs) {
 	return *lhs < *rhs;

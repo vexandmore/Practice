@@ -11,9 +11,9 @@ int main() {
 	cout << "enter map\n";
 	Map map;
 	cin >> map;
-
-	std::set<shared_ptr<Point>, Point::LessThan> points = map.getPoints();
+	map.printShortestPath(cout);
+	/*std::set<shared_ptr<Point>, Point::LessThan> points = map.getPoints();
 	for (auto p : points) {
 		cout << *p << '\n';
-	}
+	}*/
 }

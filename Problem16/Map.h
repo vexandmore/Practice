@@ -16,7 +16,7 @@ class Map {
 public:
 	Map();
 	friend std::istream& operator>>(std::istream& is, Map& map);
-	//void printShortestPath();
+	void printShortestPath(std::ostream& os);
 
 public:
 	class Spoint {
