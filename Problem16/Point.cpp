@@ -13,13 +13,13 @@ Point::Point(int row, int col, char type): row(row), col(col), type(type) {
 	}
 }
 
-void Point::connectTo(vector<Point*> otherPoints) {
-	for (auto point : otherPoints) {
+void Point::connectTo(vector<shared_ptr<Point>> otherPoints) {
+	for (shared_ptr<Point> point : otherPoints) {
 		if (std::count(connectedPoints.begin(), connectedPoints.end(), point) == 0) {
 			connectedPoints.push_back(point);
 		}
-		if (std::count(point->connectedPoints.begin(), point->connectedPoints.end(), this) == 0) {
-			point->connectedPoints.push_back(this);
+		if (std::count(point->connectedPoints.begin(), point->connectedPoints.end(), shared_from_this()) == 0) {
+			point->connectedPoints.push_back(shared_from_this());
 		}
 	}
 }
@@ -62,6 +62,10 @@ std::ostream& operator<< (std::ostream& os, const Point& node) {
 	return os;
 }
 
-bool Point::LessThan::operator() (Point* const lh, Point* const rh) const {
+bool Point::LessThan::operator() (shared_ptr<Point> const lh, shared_ptr<Point> const rh) const {
 	return lh->operator<(*rh);
 }
+
+/*bool operator== (const std::shared_ptr<Point>& lhs, const std::shared_ptr<Point>& rhs) {
+	return *lhs < *rhs;
+}*/

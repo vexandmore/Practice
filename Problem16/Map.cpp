@@ -14,6 +14,8 @@ using std::vector;
 using std::size_t;
 using std::set;
 using std::map;
+using std::shared_ptr;
+using std::make_shared;
 
 Map::Map() {
 }
@@ -31,30 +33,30 @@ std::istream& operator>> (std::istream& is, Map& map) {
 	return is;
 }
 
-Point* Map::getPoint(int row, int col, char c) const {
+shared_ptr<Point> Map::getPoint(int row, int col, char c) const {
 	Map::Spoint sp = Spoint(row, col);
 	if (internedPoints.count(sp) != 0) {
 		return internedPoints[sp];
 	}
 	else {
-		Point* newPoint = new Point(row, col, c);
+		shared_ptr<Point> newPoint = make_shared<Point>(row, col, c);
 		internedPoints.insert(std::make_pair(sp, newPoint));
 		return newPoint;
 	}
 }
 
-set<Point*, Point::LessThan> Map::getPoints() const {
-	Point* start = getStart();
-	set<Point*, Point::LessThan> points;
+set<shared_ptr<Point>, Point::LessThan> Map::getPoints() const {
+	auto start = getStart();
+	set<shared_ptr<Point>, Point::LessThan> points;
 	points.insert(start);
 	getPointsR(points, start);
 	return points;
 }
 
-void Map::getPointsR(set<Point*, Point::LessThan>& points, Point* start) const {
-	vector<Point*> newPoints = getAdjacentPoints(start);
+void Map::getPointsR(set<shared_ptr<Point>, Point::LessThan>& points, shared_ptr<Point> start) const {
+	vector<shared_ptr<Point>> newPoints = getAdjacentPoints(start);
 	start->connectTo(newPoints);
-	for (Point* newPoint : newPoints) {
+	for (auto newPoint : newPoints) {
 		if (points.count(newPoint) == 0) {
 			//newPoint->connectTo(start);
 			points.insert(newPoint);
@@ -63,8 +65,8 @@ void Map::getPointsR(set<Point*, Point::LessThan>& points, Point* start) const {
 	}
 }
 
-vector<Point*> Map::getAdjacentPoints(Point* start) const {
-	vector<Point*> adjacentPoints;
+vector<shared_ptr<Point>> Map::getAdjacentPoints(shared_ptr<Point> start) const {
+	vector<shared_ptr<Point>> adjacentPoints;
 	//if at an exit, don't check (since we could go off the map)
 	if (start->type == 'X')
 		return adjacentPoints;
@@ -103,7 +105,7 @@ vector<Point*> Map::getAdjacentPoints(Point* start) const {
 	return adjacentPoints;
 }
 
-Point* Map::getStart() const {
+shared_ptr<Point> Map::getStart() const {
 	for (int i = 0; i < map.size(); i++) {
 		std::size_t position = map[i].find('o');
 		if (position != string::npos) {

@@ -3,6 +3,7 @@
 
 #include<set>
 using std::string;
+using std::shared_ptr;
 using std::cin;
 using std::cout;
 
@@ -11,7 +12,7 @@ int main() {
 	Map map;
 	cin >> map;
 
-	std::set<Point*, Point::LessThan> points = map.getPoints();
+	std::set<shared_ptr<Point>, Point::LessThan> points = map.getPoints();
 	for (auto p : points) {
 		cout << *p << '\n';
 	}
